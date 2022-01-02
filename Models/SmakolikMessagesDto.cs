@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-
-namespace SmakolikBot.Models;
+﻿namespace SmakolikBot.Models;
 
 public class SmakolikMessagesDto
 {

@@ -1,10 +1,12 @@
-﻿using Telegram.Bot;
+﻿using SmakolikBot.Models;
+using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.InlineQueryResults;
 using Telegram.Bot.Types.InputFiles;
 using Telegram.Bot.Types.ReplyMarkups;
+using System.Text.Json;
 
 namespace SmakolikBot.Services;
 
@@ -12,12 +14,14 @@ public class HandleUpdateService
 {
     private readonly ITelegramBotClient _botClient;
     private readonly ILogger<HandleUpdateService> _logger;
-    
-    
+    private readonly SmakolikDto? _smakolikMessages;
+
+
     public HandleUpdateService(ITelegramBotClient botClient, ILogger<HandleUpdateService> logger)
     {
         _botClient = botClient;
         _logger = logger;
+        _smakolikMessages = GetSmakolikMessages.GetMesssages();
     }
 
     public async Task EchoAsync(Update update)
@@ -55,7 +59,8 @@ public class HandleUpdateService
         var action = message.Text!.Split(' ')[0] switch
         {
             "/рова" => SendRowaReply(_botClient, message),
-            "/смаколик" => SendSmakolPhoto(_botClient, message)
+            "/смаколик" => SendSmakolPhoto(_botClient, message),
+            "/спиздани" => SendSmakolMessage(_botClient, message)
             //_ => Usage(_botClient, message)
         };
 
@@ -92,6 +97,16 @@ public class HandleUpdateService
                 text: usage,
                 replyMarkup: new ReplyKeyboardRemove());
         }
+    }
+
+    private async Task<Message> SendSmakolMessage(ITelegramBotClient bot, Message message)
+    {
+        var smakolikMessages = _smakolikMessages.Data.ToList();
+        var r = new Random();
+        var count = r.Next(0,smakolikMessages.Count - 1);
+        var reply = smakolikMessages[count].Message;
+        return await bot.SendTextMessageAsync(chatId: message.Chat.Id,
+            text: reply);
     }
 
     private async Task BotCallbackQueryReceived(CallbackQuery callbackQuery)
