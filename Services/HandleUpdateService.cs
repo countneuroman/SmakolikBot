@@ -14,14 +14,14 @@ public class HandleUpdateService
 {
     private readonly ITelegramBotClient _botClient;
     private readonly ILogger<HandleUpdateService> _logger;
-    private readonly SmakolikDto? _smakolikMessages;
+    private readonly GetSmakolikMessages _smakolikMessages;
 
 
-    public HandleUpdateService(ITelegramBotClient botClient, ILogger<HandleUpdateService> logger)
+    public HandleUpdateService(ITelegramBotClient botClient, ILogger<HandleUpdateService> logger, GetSmakolikMessages smakolikMessages)
     {
         _botClient = botClient;
         _logger = logger;
-        _smakolikMessages = GetSmakolikMessages.GetMesssages();
+        _smakolikMessages = smakolikMessages;
     }
 
     public async Task EchoAsync(Update update)
@@ -101,7 +101,7 @@ public class HandleUpdateService
 
     private async Task<Message> SendSmakolMessage(ITelegramBotClient bot, Message message)
     {
-        var smakolikMessages = _smakolikMessages.Data.ToList();
+        var smakolikMessages = _smakolikMessages.GetMessages();
         var r = new Random();
         var count = r.Next(0,smakolikMessages.Count - 1);
         var reply = smakolikMessages[count].Message;

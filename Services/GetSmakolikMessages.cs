@@ -3,14 +3,20 @@ using SmakolikBot.Models;
 
 namespace SmakolikBot.Services;
 
-public static class GetSmakolikMessages
+//TODO: Add caching.
+public  class GetSmakolikMessages
 {
     private const string SmakolikMessagesFilePath = "Files/smakolik.json";
-    
-    public static SmakolikDto? GetMesssages()
+    private SmakolikDto? SmakolikMessages { get; }
+
+    public GetSmakolikMessages()
     {
         var smakolikMessagesString = File.ReadAllText(SmakolikMessagesFilePath);
-        var smakolikMessages = JsonSerializer.Deserialize<SmakolikDto>(smakolikMessagesString);
-        return smakolikMessages;
+        SmakolikMessages = JsonSerializer.Deserialize<SmakolikDto>(smakolikMessagesString);
+    }
+
+    public List<SmakolikMessagesDto>? GetMessages()
+    {
+        return SmakolikMessages?.Data.ToList();
     }
 }

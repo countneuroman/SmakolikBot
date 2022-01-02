@@ -26,6 +26,8 @@ public class Startup
 
         services.AddControllers()
             .AddNewtonsoftJson();
+
+        services.AddSingleton<GetSmakolikMessages>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
