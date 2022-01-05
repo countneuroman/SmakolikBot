@@ -13,4 +13,15 @@
         <PackageReference Include="Telegram.Bot" Version="17.0.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="Files\SmakolEpic.jpg" />
+      <Content Include="Files\SmakolEpic.jpg">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Files\SmakolNaruto.jpg" />
+      <Content Include="Files\SmakolNaruto.jpg">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
 </Project>
