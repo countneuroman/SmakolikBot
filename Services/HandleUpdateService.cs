@@ -59,6 +59,7 @@ public class HandleUpdateService
         var action = message.Text!.Split(' ')[0] switch
         {
             "/рова" => SendRowaReply(_botClient, message),
+            "/help@smakolik_bot" => SendHelp(_botClient, message),
             "/смаколик" => SendSmakolPhoto(_botClient, message),
             "/спиздани" => SendSmakolMessage(_botClient, message)
             //_ => Usage(_botClient, message)
@@ -89,10 +90,11 @@ public class HandleUpdateService
                 caption: "СМАААААКОООЛИК!");
         }
         
-        static async Task<Message> Help(ITelegramBotClient bot, Message message)
+        static async Task<Message> SendHelp(ITelegramBotClient bot, Message message)
         {
-            const string usage = "Help: \n" +
-                                 "/рова - переводим роваязык (в разработке)";
+            const string usage = "/рова - переводим роваязык (в разработке) \n" +
+                                 "/спиздани - спиздануть что нибудь \n" +
+                                 "/смаколик - посмотрите на Смаколика!";
             return await bot.SendTextMessageAsync(chatId: message.Chat.Id,
                 text: usage,
                 replyMarkup: new ReplyKeyboardRemove());
