@@ -56,13 +56,12 @@ public class HandleUpdateService
         if (message.Type != MessageType.Text)
             return;
         
-        var action = message.Text!.Split(' ')[0] switch
+        var action = message.Text!.Trim().Split(' ')[0] switch
         {
             "/рова" => SendRowaReply(_botClient, message),
-            "/help@smakolik_bot" => SendHelp(_botClient, message),
+            "/help@smakolik_bot" or "/help" => SendHelp(_botClient, message),
             "/смаколик" => SendSmakolPhoto(_botClient, message),
             "/спиздани" => SendSmakolMessage(_botClient, message)
-            //_ => Usage(_botClient, message)
         };
 
         Message sentMessage = await action;
