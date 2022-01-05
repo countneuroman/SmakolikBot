@@ -1,4 +1,5 @@
-﻿using SmakolikBot.Services;
+﻿using Microsoft.AspNetCore.HttpOverrides;
+using SmakolikBot.Services;
 using Telegram.Bot;
 
 namespace SmakolikBot;
@@ -36,6 +37,11 @@ public class Startup
         {
             app.UseDeveloperExceptionPage();
         }
+        
+        app.UseForwardedHeaders(new ForwardedHeadersOptions
+        {
+            ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+        });
 
         app.UseRouting();
         app.UseCors();
