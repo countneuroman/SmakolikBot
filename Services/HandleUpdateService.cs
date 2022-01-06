@@ -58,37 +58,13 @@ public class HandleUpdateService
         
         var action = message.Text!.Trim().Split(' ')[0] switch
         {
-            "/рова" => SendRowaReply(_botClient, message),
             "/help@smakolik_bot" or "/help" => SendHelp(_botClient, message),
-            "/смаколик" => SendSmakolPhoto(_botClient, message),
             "/спиздани" => SendSmakolMessage(_botClient, message)
         };
 
-        Message sentMessage = await action;
+        var sentMessage = await action;
         _logger.LogInformation("The message was sent with id: {SentMessageId}", sentMessage.MessageId);
 
-        static async Task<Message> SendRowaReply(ITelegramBotClient bot, Message message)
-        {
-            const string rowaReply = "ДРУГ.";
-            return await bot.SendTextMessageAsync(chatId: message.Chat.Id,
-                text: rowaReply);
-        }
-
-        static async Task<Message> SendSmakolPhoto(ITelegramBotClient bot, Message message)
-        {
-            await bot.SendChatActionAsync(message.Chat.Id, ChatAction.UploadPhoto);
-
-            var filesPath = new string[] {@"Files/SmakolEpic.jpg", @"Files/SmakolNaruto.jpg"};
-            var r = new Random();
-            var count = r.Next(0,filesPath.Length);
-            using FileStream fileStream = new(filesPath[count], FileMode.Open, FileAccess.Read, FileShare.Read);
-            var fileName = filesPath[count].Split(Path.DirectorySeparatorChar).Last();
-
-            return await bot.SendPhotoAsync(chatId: message.Chat.Id,
-                photo: new InputOnlineFile(fileStream, fileName),
-                caption: "СМАААААКОООЛИК!");
-        }
-        
         static async Task<Message> SendHelp(ITelegramBotClient bot, Message message)
         {
             const string usage = "/рова - переводим роваязык (в разработке) \n" +
