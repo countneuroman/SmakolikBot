@@ -1,12 +1,10 @@
-﻿using SmakolikBot.Models;
-using Telegram.Bot;
+﻿using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.InlineQueryResults;
-using Telegram.Bot.Types.InputFiles;
 using Telegram.Bot.Types.ReplyMarkups;
-using System.Text.Json;
+using SmakolikBot.Models;
+using SmakolikBot.Services;
 
 namespace SmakolikBot.Services;
 
@@ -15,13 +13,16 @@ public class HandleUpdateService
     private readonly ITelegramBotClient _botClient;
     private readonly ILogger<HandleUpdateService> _logger;
     private readonly GetSmakolikMessages _smakolikMessages;
+    private readonly MongoService _mongoService;
 
 
-    public HandleUpdateService(ITelegramBotClient botClient, ILogger<HandleUpdateService> logger, GetSmakolikMessages smakolikMessages)
+    public HandleUpdateService(ITelegramBotClient botClient, ILogger<HandleUpdateService> logger,
+        GetSmakolikMessages smakolikMessages, MongoService mongoService)
     {
         _botClient = botClient;
         _logger = logger;
         _smakolikMessages = smakolikMessages;
+        _mongoService = mongoService;
     }
 
     public async Task EchoAsync(Update update)
@@ -53,6 +54,12 @@ public class HandleUpdateService
     private async Task BotOnMessageReceived(Message message)
     {
         _logger.LogInformation("Receive message type: {MessageType}", message.Type);
+        var check = await CounterMessages(message);
+        if (check)
+        {
+            var act =SendSmakolMessage(_botClient, message);
+            await act;
+        }
         if (message.Type != MessageType.Text)
             return;
         
@@ -61,9 +68,8 @@ public class HandleUpdateService
             "/help@smakolik_bot" or "/help" => SendHelp(_botClient, message),
             "/спиздани" => SendSmakolMessage(_botClient, message)
         };
-
-        var sentMessage = await action;
-        _logger.LogInformation("The message was sent with id: {SentMessageId}", sentMessage.MessageId);
+        
+        await action;
 
         static async Task<Message> SendHelp(ITelegramBotClient bot, Message message)
         {
@@ -76,11 +82,36 @@ public class HandleUpdateService
         }
     }
 
+    private async Task<bool> CounterMessages(Message message)
+    {
+        var chatId = message.Chat.Id;
+        var chatObj = await _mongoService.GetAsync(message.Chat.Id);
+        if (chatObj is null)
+        {
+            var chat = new ChatMessagesUpdateSettings(chatId);
+            await _mongoService.CreateAsync(chat);
+        }
+        else
+        {
+            if(chatObj.CounterValue >= 10)
+            {
+                chatObj.CounterValue = 0;
+                await _mongoService.UpdateAsync(chatObj.Id!, chatObj);
+                return true;
+            }
+
+            chatObj.CounterValue += 1;
+            await _mongoService.UpdateAsync(chatObj.Id!, chatObj);
+        }
+
+        return false;
+    }
+    
     private async Task<Message> SendSmakolMessage(ITelegramBotClient bot, Message message)
     {
         var smakolikMessages = _smakolikMessages.GetMessages();
         var r = new Random();
-        var count = r.Next(0,smakolikMessages.Count - 1);
+        var count = r.Next(0, smakolikMessages!.Count - 1);
         var reply = smakolikMessages[count].Message;
         return await bot.SendTextMessageAsync(chatId: message.Chat.Id,
             text: reply);
