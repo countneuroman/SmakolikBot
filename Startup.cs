@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.HttpOverrides;
+using SmakolikBot.Models;
 using SmakolikBot.Services;
 using Telegram.Bot;
 
@@ -8,7 +9,7 @@ public class Startup
 {
     public IConfiguration Configuration { get;}
     private BotConfiguration BotConfig { get; }
-    
+
     public Startup(IConfiguration configuration)
     {
         Configuration = configuration;
@@ -17,6 +18,11 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
+
+        services.Configure<MongoDatabaseSettings>(Configuration.GetSection("MongoDatabase"));
+
+        services.AddSingleton<MongoService>();
+        
         services.AddHostedService<ConfigureWebhook>();
 
         services.AddHttpClient("tgwebhook")
