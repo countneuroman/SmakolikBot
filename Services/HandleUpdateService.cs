@@ -45,16 +45,16 @@ public class HandleUpdateService
 
     private async Task BotOnMessageReceived(Message message)
     {
-        _logger.LogInformation("Receive message type: {MessageType}", message.Type);
         var check = await CounterMessages(message);
-        if (check)
-        {
-            var act =SendSmakolMessage(_botClient, message);
-            await act;
+
+        if (message.ReplyToMessage?.From?.Id == _botClient.BotId || check)
+        { 
+            await SendSmakolMessage(_botClient, message);
         }
+        
         if (message.Type != MessageType.Text)
             return;
-        
+
         var action = message.Text!.Trim().Split(' ')[0] switch
         {
             "/help@smakolik_bot" or "/help" => SendHelp(_botClient, message),
