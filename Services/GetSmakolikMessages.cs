@@ -1,22 +1,19 @@
-﻿using System.Text.Json;
-using SmakolikBot.Models;
+﻿using SmakolikBot.Models;
 
 namespace SmakolikBot.Services;
 
 //TODO: Add caching.
 public  class GetSmakolikMessages
 {
-    private const string SmakolikMessagesFilePath = "Files/smakolik.json";
-    private SmakolikDto? SmakolikMessages { get; }
+    private List<SmakolikMessagesDto> SmakolikMessages { get; }
 
-    public GetSmakolikMessages()
+    public GetSmakolikMessages(MongoService mongoService)
     {
-        var smakolikMessagesString = File.ReadAllText(SmakolikMessagesFilePath);
-        SmakolikMessages = JsonSerializer.Deserialize<SmakolikDto>(smakolikMessagesString);
+        SmakolikMessages = mongoService.GetMessagesAsync().Result;
     }
 
-    public List<SmakolikMessagesDto>? GetMessages()
+    public List<SmakolikMessagesDto> GetMessages()
     {
-        return SmakolikMessages?.Data.ToList();
+        return SmakolikMessages;
     }
 }

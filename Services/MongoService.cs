@@ -5,10 +5,11 @@ using MongoDatabaseSettings = SmakolikBot.Models.MongoDatabaseSettings;
 
 namespace SmakolikBot.Services;
 
+//TODO: Need more abstract service, very hard code for initializing collections and CRUD operations.
 public class MongoService
 {
     private readonly IMongoCollection<ChatMessagesUpdateSettings> _chatMessagesUpdateCollection;
-
+    private readonly IMongoCollection<SmakolikMessagesDto> _smakolikMessagesCollection;
     public MongoService(IOptions<MongoDatabaseSettings> mongoDatabaseSettings)
     {
         var mongoClient = new MongoClient(
@@ -19,9 +20,16 @@ public class MongoService
         
         _chatMessagesUpdateCollection =
             mongoDatabase.GetCollection<ChatMessagesUpdateSettings>(
-                mongoDatabaseSettings.Value.CollectionName);
+                mongoDatabaseSettings.Value.CollectionsName.ChatMessagesUpdateSettings);
+        
+        _smakolikMessagesCollection =
+            mongoDatabase.GetCollection<SmakolikMessagesDto>(
+                mongoDatabaseSettings.Value.CollectionsName.Messages);
     }
 
+    public async Task<List<SmakolikMessagesDto>> GetMessagesAsync() =>
+        await _smakolikMessagesCollection.Find(_ => true).ToListAsync(); 
+    
     public async Task<ChatMessagesUpdateSettings?> GetAsync(long chatId) =>
         await _chatMessagesUpdateCollection.Find(x => 
             x.ChatId == chatId).FirstOrDefaultAsync();
