@@ -58,7 +58,6 @@ public class HandleUpdateService
         var action = message.Text!.Trim().Split(' ')[0] switch
         {
             "/help@smakolik_bot" or "/help" => SendHelp(_botClient, message),
-            "/спиздани" => SendSmakolMessage(_botClient, message),
             _ => UnknownMessageHandlerAsync()
         };
         
@@ -66,7 +65,7 @@ public class HandleUpdateService
 
         static async Task<Message> SendHelp(ITelegramBotClient bot, Message message)
         {
-            const string usage = "/спиздани - спиздануть что нибудь \n";
+            const string usage = "Данный бот просто любит общаться! \n";
             return await bot.SendTextMessageAsync(chatId: message.Chat.Id,
                 text: usage,
                 replyMarkup: new ReplyKeyboardRemove());
