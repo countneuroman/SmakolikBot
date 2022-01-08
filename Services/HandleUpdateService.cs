@@ -58,7 +58,8 @@ public class HandleUpdateService
         var action = message.Text!.Trim().Split(' ')[0] switch
         {
             "/help@smakolik_bot" or "/help" => SendHelp(_botClient, message),
-            "/спиздани" => SendSmakolMessage(_botClient, message)
+            "/спиздани" => SendSmakolMessage(_botClient, message),
+            _ => UnknownMessageHandlerAsync()
         };
         
         await action;
@@ -110,6 +111,11 @@ public class HandleUpdateService
     private Task UnkownUpdateHandlerAsync(Update update)
     {
         _logger.LogInformation("Unkown update type: {UpdateType}", update.Type);
+        return Task.CompletedTask;
+    }
+    
+    private Task UnknownMessageHandlerAsync()
+    {
         return Task.CompletedTask;
     }
     
