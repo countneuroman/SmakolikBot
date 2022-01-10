@@ -52,16 +52,42 @@ public class HandleUpdateService
             await SendSmakolMessage(_botClient, message);
         }
         
-        if (message.Type != MessageType.Text)
-            return;
-
-        var action = message.Text!.Trim().Split(' ')[0] switch
+        switch (message.Type)
         {
-            "/help@smakolik_bot" or "/help" => SendHelp(_botClient, message),
-            _ => UnknownMessageHandlerAsync()
-        };
+            case MessageType.ChatMembersAdded:
+                await SendWelcomeMessage(_botClient, message);
+                break;
+            case MessageType.ChatMemberLeft:
+                await SendLeftMessage(_botClient, message);
+                break;
+            case MessageType.Text:
+            {
+                var action = message.Text!.Trim().Split(' ')[0] switch
+                {
+                    "/help@smakolik_bot" or "/help" => SendHelp(_botClient, message),
+                    _ => UnknownMessageHandlerAsync()
+                };
+                await action;
+                break;
+            }
+            default:
+                return;
+        }
+
+        static async Task SendWelcomeMessage(ITelegramBotClient bot, Message message)
+        {
+            var fromUserId = message.From!.Username;
+            var text = $"Милости прошу к нашему шалашу @{fromUserId}!";
+            await bot.SendTextMessageAsync(message.Chat.Id, text);
+        }
         
-        await action;
+        static async Task SendLeftMessage(ITelegramBotClient bot, Message message)
+        {
+            //TODO: Add counter who days user was group.
+            var fromUserId = message.From!.Username;
+            var text = $"Ну и пошел ты, @{fromUserId}!";
+            await bot.SendTextMessageAsync(message.Chat.Id, text);
+        }   
 
         static async Task<Message> SendHelp(ITelegramBotClient bot, Message message)
         {
