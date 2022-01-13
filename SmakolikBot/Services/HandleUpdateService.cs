@@ -109,7 +109,7 @@ public class HandleUpdateService
         }
         else
         {
-            if(chatObj.CounterValue >= 10)
+            if(chatObj.CounterValue >= chatObj.CounterValueToNextMessage)
             {
                 chatObj.CounterValue = 0;
                 await _mongoService.UpdateAsync(chatObj.Id!, chatObj);
