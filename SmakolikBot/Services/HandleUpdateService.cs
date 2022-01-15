@@ -48,9 +48,14 @@ public class HandleUpdateService
     {
         var check = await CounterMessages(message);
 
-        if (message.ReplyToMessage?.From?.Id == _botClient.BotId || check)
+        if (message.ReplyToMessage?.From?.Id == _botClient.BotId)
         { 
-            await SendSmakolMessage(_botClient, message);
+            await SendReplyMessage(_botClient, message);
+        }
+
+        if (check)
+        {
+            await SendMessage(_botClient, message);
         }
         
         switch (message.Type)
@@ -65,10 +70,10 @@ public class HandleUpdateService
             {
                 var action = message.Text switch
                 {
-                    var mssageText when new Regex(@"(\B\/help\b$)|(\B\/help@smakolik_bot\b)")
-                        .IsMatch(mssageText!) => SendHelp(_botClient, message),
-                    var mssageText when new Regex(@"\B\@smakolik_bot\b")
-                        .IsMatch(mssageText!) => SendSmakolMessage(_botClient, message),
+                    var messageText when new Regex(@"(\B\/help\b$)|(\B\/help@smakolik_bot\b)")
+                        .IsMatch(messageText!) => SendHelp(_botClient, message),
+                    var messageText when new Regex(@"\B\@smakolik_bot\b")
+                        .IsMatch(messageText!) => SendReplyMessage(_botClient, message),
                     _ => UnknownMessageHandlerAsync()
                 };
                 await action;
@@ -127,14 +132,19 @@ public class HandleUpdateService
         return false;
     }
     
-    private async Task<Message> SendSmakolMessage(ITelegramBotClient bot, Message message)
+    private async Task<Message> SendMessage(ITelegramBotClient bot, Message message)
     {
-        var smakolikMessages = _smakolikMessages.GetMessages();
-        var r = new Random();
-        var count = r.Next(0, smakolikMessages!.Count - 1);
-        var reply = smakolikMessages[count].Message;
+        var messageText = _smakolikMessages.GetRandomMessage();
         return await bot.SendTextMessageAsync(chatId: message.Chat.Id,
-            text: reply);
+            text: messageText);
+    }
+
+    
+    private async Task<Message> SendReplyMessage(ITelegramBotClient bot, Message message)
+    {
+        var messageText = _smakolikMessages.GetRandomMessage();
+        return await bot.SendTextMessageAsync(chatId: message.Chat.Id,
+                text: messageText, replyToMessageId: message.MessageId);
     }
     
     private Task UnkownUpdateHandlerAsync(Update update)

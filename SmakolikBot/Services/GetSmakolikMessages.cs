@@ -11,9 +11,11 @@ public  class GetSmakolikMessages
     {
         SmakolikMessages = mongoService.GetMessagesAsync().Result;
     }
-
-    public List<SmakolikMessagesDto> GetMessages()
+    
+    public string GetRandomMessage()
     {
-        return SmakolikMessages;
+        var r = new Random();
+        var count = r.Next(0, SmakolikMessages.Count - 1);
+        return SmakolikMessages[count].Message;
     }
 }
