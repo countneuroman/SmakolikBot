@@ -1,4 +1,5 @@
-﻿using Telegram.Bot;
+﻿using System.Text.RegularExpressions;
+using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -62,9 +63,12 @@ public class HandleUpdateService
                 break;
             case MessageType.Text:
             {
-                var action = message.Text!.Trim().Split(' ')[0] switch
+                var action = message.Text switch
                 {
-                    "/help@smakolik_bot" or "/help" => SendHelp(_botClient, message),
+                    var mssageText when new Regex(@"(\B\/help\b$)|(\B\/help@smakolik_bot\b)")
+                        .IsMatch(mssageText!) => SendHelp(_botClient, message),
+                    var mssageText when new Regex(@"\B\@smakolik_bot\b")
+                        .IsMatch(mssageText!) => SendSmakolMessage(_botClient, message),
                     _ => UnknownMessageHandlerAsync()
                 };
                 await action;
