@@ -85,16 +85,20 @@ public class HandleUpdateService
 
         static async Task SendWelcomeMessage(ITelegramBotClient bot, Message message)
         {
-            var fromUserId = message.From!.Username;
-            var text = $"Милости прошу к нашему шалашу @{fromUserId}!";
-            await bot.SendTextMessageAsync(message.Chat.Id, text);
+            var newChatMembers = message.NewChatMembers;
+            foreach (var user in newChatMembers!)
+            {
+                var username = user.Username;
+                var text = $"Милости прошу к нашему шалашу @{username}!";
+                await bot.SendTextMessageAsync(message.Chat.Id, text);
+            }
         }
-        
+
         static async Task SendLeftMessage(ITelegramBotClient bot, Message message)
         {
             //TODO: Add counter who days user was group.
-            var fromUserId = message.From!.Username;
-            var text = $"Ну и пошел ты, @{fromUserId}!";
+            var leftChatMember = message.LeftChatMember!.Username;
+            var text = $"Ну и пошел ты, @{leftChatMember}!";
             await bot.SendTextMessageAsync(message.Chat.Id, text);
         }   
 
@@ -105,6 +109,21 @@ public class HandleUpdateService
                 text: usage,
                 replyMarkup: new ReplyKeyboardRemove());
         }
+    }
+    
+    private async Task<Message> SendMessage(ITelegramBotClient bot, Message message)
+    {
+        var messageText = _smakolikMessages.GetRandomMessage();
+        return await bot.SendTextMessageAsync(chatId: message.Chat.Id,
+            text: messageText);
+    }
+
+    
+    private async Task<Message> SendReplyMessage(ITelegramBotClient bot, Message message)
+    {
+        var messageText = _smakolikMessages.GetRandomMessage();
+        return await bot.SendTextMessageAsync(chatId: message.Chat.Id,
+            text: messageText, replyToMessageId: message.MessageId);
     }
 
     private async Task<bool> CounterMessages(Message message)
@@ -131,22 +150,6 @@ public class HandleUpdateService
 
         return false;
     }
-    
-    private async Task<Message> SendMessage(ITelegramBotClient bot, Message message)
-    {
-        var messageText = _smakolikMessages.GetRandomMessage();
-        return await bot.SendTextMessageAsync(chatId: message.Chat.Id,
-            text: messageText);
-    }
-
-    
-    private async Task<Message> SendReplyMessage(ITelegramBotClient bot, Message message)
-    {
-        var messageText = _smakolikMessages.GetRandomMessage();
-        return await bot.SendTextMessageAsync(chatId: message.Chat.Id,
-                text: messageText, replyToMessageId: message.MessageId);
-    }
-    
     private Task UnkownUpdateHandlerAsync(Update update)
     {
         _logger.LogInformation("Unkown update type: {UpdateType}", update.Type);
