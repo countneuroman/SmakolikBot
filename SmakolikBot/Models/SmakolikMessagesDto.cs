@@ -3,7 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace SmakolikBot.Models;
 
-public class SmakolikMessagesDto
+public class MessagesDto
 {
     [BsonId]
     [BsonRepresentation((BsonType.ObjectId))]

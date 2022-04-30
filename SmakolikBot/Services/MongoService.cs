@@ -9,7 +9,7 @@ namespace SmakolikBot.Services;
 public class MongoService
 {
     private readonly IMongoCollection<ChatMessagesUpdateSettings> _chatMessagesUpdateCollection;
-    private readonly IMongoCollection<SmakolikMessagesDto> _smakolikMessagesCollection;
+    private readonly IMongoCollection<MessagesDto> _smakolikMessagesCollection;
     public MongoService(IOptions<MongoDatabaseSettings> mongoDatabaseSettings)
     {
         var mongoClient = new MongoClient(
@@ -23,11 +23,11 @@ public class MongoService
                 mongoDatabaseSettings.Value.CollectionsName.ChatMessagesUpdateSettings);
         
         _smakolikMessagesCollection =
-            mongoDatabase.GetCollection<SmakolikMessagesDto>(
+            mongoDatabase.GetCollection<MessagesDto>(
                 mongoDatabaseSettings.Value.CollectionsName.Messages);
     }
 
-    public async Task<List<SmakolikMessagesDto>> GetMessagesAsync() =>
+    public async Task<List<MessagesDto>> GetMessagesAsync() =>
         await _smakolikMessagesCollection.Find(_ => true).ToListAsync(); 
     
     public async Task<ChatMessagesUpdateSettings?> GetAsync(long chatId) =>

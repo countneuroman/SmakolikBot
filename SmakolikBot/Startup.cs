@@ -23,6 +23,8 @@ public class Startup
 
         services.AddSingleton<MongoService>();
         
+        services.AddSingleton<GetMessageService>();
+        
         services.AddHostedService<ConfigureWebhook>();
 
         services.AddHttpClient("tgwebhook")
@@ -33,8 +35,6 @@ public class Startup
 
         services.AddControllers()
             .AddNewtonsoftJson();
-
-        services.AddSingleton<GetSmakolikMessages>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
