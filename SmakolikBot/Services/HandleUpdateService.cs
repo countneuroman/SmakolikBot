@@ -30,7 +30,6 @@ public class HandleUpdateService
         var handler = update.Type switch
         {
             UpdateType.Message => BotOnMessageReceived(update.Message!),
-            UpdateType.EditedMessage => BotOnMessageReceived(update.EditedMessage!),
             _ => UnkownUpdateHandlerAsync(update)
         };
 
