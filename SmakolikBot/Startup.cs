@@ -23,7 +23,7 @@ public class Startup
 
         services.AddSingleton<MongoService>();
         
-        services.AddSingleton<GetMessageService>();
+        services.AddScoped<GetMessageService>();
         
         services.AddHostedService<ConfigureWebhook>();
 
@@ -35,6 +35,8 @@ public class Startup
 
         services.AddControllers()
             .AddNewtonsoftJson();
+
+        services.AddMemoryCache();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

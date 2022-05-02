@@ -1,21 +1,49 @@
-﻿using SmakolikBot.Models;
+﻿using Microsoft.Extensions.Caching.Memory;
+using SmakolikBot.Models;
 
 namespace SmakolikBot.Services;
 
-//TODO: Add caching.
 public  class GetMessageService
 {
-    private List<MessagesDto> Messages { get; }
+    private readonly IMemoryCache _memoryCache;
+    private readonly MongoService _mongoService;
+    private readonly ILogger<GetMessageService> _logger;
 
-    public GetMessageService(MongoService mongoService)
+    private List<MessagesDto>? Messages { get; set; }
+
+    public GetMessageService(MongoService mongoService, IMemoryCache memoryCache, ILogger<GetMessageService> logger)
     {
-        Messages = mongoService.GetMessagesAsync().Result;
+        _mongoService = mongoService;
+        _memoryCache = memoryCache;
+        _logger = logger;
     }
-    
+
     public string GetRandomMessage()
     {
+        GetAllMesages();
+        
+        if (Messages == null)
+        {
+            _logger.LogError("Messages object is null.");
+            return "Упс, я паходу сломался..";
+        }
+        
         var r = new Random();
         var count = r.Next(0, Messages.Count - 1);
         return Messages[count].Message;
+
+    }
+    
+    private void GetAllMesages()
+    {
+        const string key = "MessagesKey";
+        
+        if (!_memoryCache.TryGetValue<List<MessagesDto>>(key, out var result))
+        {
+            Messages = _mongoService.GetMessagesAsync().Result;
+            _memoryCache.Set(key, Messages);
+        }
+
+        Messages = result;
     }
 }
