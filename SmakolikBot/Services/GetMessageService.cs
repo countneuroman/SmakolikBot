@@ -40,8 +40,11 @@ public  class GetMessageService
         
         if (!_memoryCache.TryGetValue<List<MessagesDto>>(key, out var result))
         {
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromDays(30));
+            
             Messages = _mongoService.GetMessagesAsync().Result;
-            _memoryCache.Set(key, Messages);
+            _memoryCache.Set(key, Messages, cacheEntryOptions);
         }
 
         Messages = result;

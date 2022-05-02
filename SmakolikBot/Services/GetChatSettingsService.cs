@@ -20,8 +20,11 @@ public class GetChatSettingsService
     {
         if (!_memoryCache.TryGetValue<ChatMessagesUpdateSettings>(chatId, out var result))
         {
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromDays(30));
+            
             ChatMessagesUpdateSettings? chatSettings = await _mongoService.GetAsync(chatId);
-            _memoryCache.Set(chatId, chatSettings);
+            _memoryCache.Set(chatId, chatSettings, cacheEntryOptions);
             result = chatSettings;
         }
 
