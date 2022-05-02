@@ -22,7 +22,7 @@ public class Startup
         services.Configure<MongoDatabaseSettings>(Configuration.GetSection("MongoDatabase"));
 
         services.AddSingleton<MongoService>();
-        
+        services.AddScoped<GetChatSettingsService>();
         services.AddScoped<GetMessageService>();
         
         services.AddHostedService<ConfigureWebhook>();

@@ -4,7 +4,6 @@ using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
-using SmakolikBot.Models;
 
 namespace SmakolikBot.Services;
 
@@ -13,16 +12,16 @@ public class HandleUpdateService
     private readonly ITelegramBotClient _botClient;
     private readonly ILogger<HandleUpdateService> _logger;
     private readonly GetMessageService _smakolikMessages;
-    private readonly MongoService _mongoService;
+    private readonly GetChatSettingsService _chatSettings;
 
 
     public HandleUpdateService(ITelegramBotClient botClient, ILogger<HandleUpdateService> logger,
-        GetMessageService smakolikMessages, MongoService mongoService)
+        GetMessageService smakolikMessages, GetChatSettingsService chatSettings)
     {
         _botClient = botClient;
         _logger = logger;
         _smakolikMessages = smakolikMessages;
-        _mongoService = mongoService;
+        _chatSettings = chatSettings;
     }
 
     public async Task EchoAsync(Update update)
@@ -45,7 +44,7 @@ public class HandleUpdateService
 
     private async Task BotOnMessageReceived(Message message)
     {
-        var check = await CounterMessages(message);
+        var check = await _chatSettings.CounterMessages(message);
 
         if (message.ReplyToMessage?.From?.Id == _botClient.BotId)
         { 
@@ -124,31 +123,7 @@ public class HandleUpdateService
         return await bot.SendTextMessageAsync(chatId: message.Chat.Id,
             text: messageText, replyToMessageId: message.MessageId);
     }
-
-    private async Task<bool> CounterMessages(Message message)
-    {
-        var chatId = message.Chat.Id;
-        var chatObj = await _mongoService.GetAsync(message.Chat.Id);
-        if (chatObj is null)
-        {
-            var chat = new ChatMessagesUpdateSettings(chatId);
-            await _mongoService.CreateAsync(chat);
-        }
-        else
-        {
-            if(chatObj.CounterValue >= chatObj.CounterValueToNextMessage)
-            {
-                chatObj.CounterValue = 0;
-                await _mongoService.UpdateAsync(chatObj.Id!, chatObj);
-                return true;
-            }
-
-            chatObj.CounterValue += 1;
-            await _mongoService.UpdateAsync(chatObj.Id!, chatObj);
-        }
-
-        return false;
-    }
+    
     private Task UnkownUpdateHandlerAsync(Update update)
     {
         _logger.LogInformation("Unkown update type: {UpdateType}", update.Type);
