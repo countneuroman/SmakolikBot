@@ -1,0 +1,25 @@
+name: build Smakolik.Bot solution
+
+
+on:
+  push:
+    branches: [ main ]
+  pull-request:
+    branches: [ main ]
+
+
+jobs:
+  use-actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 7.0.x
+        
+      - name: Build SmakolikBot
+        shell: bash
+        run: |
+          dotnet restore "SmakolikBot.sln"
+          cd SmakolikBot
+          dotnet build --no-restore
