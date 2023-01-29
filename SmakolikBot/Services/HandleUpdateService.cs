@@ -113,7 +113,7 @@ public class HandleUpdateService
     {
         var messageText = _smakolikMessages.GetRandomMessage();
         return await bot.SendTextMessageAsync(chatId: message.Chat.Id,
-            text: messageText);
+            text: messageText!);
     }
 
     
@@ -121,7 +121,7 @@ public class HandleUpdateService
     {
         var messageText = _smakolikMessages.GetRandomMessage();
         return await bot.SendTextMessageAsync(chatId: message.Chat.Id,
-            text: messageText, replyToMessageId: message.MessageId);
+            text: messageText!, replyToMessageId: message.MessageId);
     }
     
     private Task UnkownUpdateHandlerAsync(Update update)

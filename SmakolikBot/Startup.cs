@@ -8,7 +8,7 @@ namespace SmakolikBot;
 public class Startup
 {
     public IConfiguration Configuration { get;}
-    private BotConfiguration BotConfig { get; }
+    private BotConfiguration? BotConfig { get; }
 
     public Startup(IConfiguration configuration)
     {

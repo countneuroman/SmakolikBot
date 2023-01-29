@@ -3,13 +3,13 @@ using SmakolikBot.Models;
 
 namespace SmakolikBot.Services;
 
-public  class GetMessageService
+public  class MessagesService
 {
     private readonly IMemoryCache _memoryCache;
     private readonly MongoService _mongoService;
     private readonly ILogger<MessagesService> _logger;
 
-    private List<MessagesDto> Messages { get; set; }
+    private List<MessagesDto>? Messages { get; set; }
 
     public MessagesService(MongoService mongoService, IMemoryCache memoryCache, ILogger<MessagesService> logger)
     {
@@ -18,7 +18,7 @@ public  class GetMessageService
         _logger = logger;
     }
 
-    public string GetRandomMessage()
+    public string? GetRandomMessage()
     {
         GetAllMesages();
         
