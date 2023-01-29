@@ -22,8 +22,8 @@ public class Startup
         services.Configure<MongoDatabaseSettings>(Configuration.GetSection("MongoDatabase"));
 
         services.AddSingleton<MongoService>();
-        services.AddScoped<GetChatSettingsService>();
-        services.AddScoped<GetMessageService>();
+        services.AddScoped<ChatSettingsService>();
+        services.AddScoped<MessagesService>();
         
         services.AddHostedService<ConfigureWebhook>();
 

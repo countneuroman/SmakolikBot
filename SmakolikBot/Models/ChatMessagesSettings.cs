@@ -3,15 +3,15 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace SmakolikBot.Models;
 
-public class ChatMessagesUpdateSettings
+public class ChatMessagesSettings
 {
-    public ChatMessagesUpdateSettings(long chatId, int counterValue = 0, int counterValueToNextMessage = 10)
+    public ChatMessagesSettings(long chatId, int counterValue = 0, int counterValueToNextMessage = 10)
     {
         ChatId = chatId;
         CounterValue = counterValue;
         CounterValueToNextMessage = counterValueToNextMessage;
     }
-    public ChatMessagesUpdateSettings() { }
+    public ChatMessagesSettings() { }
 
     [BsonId]
     [BsonRepresentation((BsonType.ObjectId))]

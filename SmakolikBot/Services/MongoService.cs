@@ -8,7 +8,7 @@ namespace SmakolikBot.Services;
 //TODO: Need more abstract service, very hard code for initializing collections and CRUD operations.
 public class MongoService
 {
-    private readonly IMongoCollection<ChatMessagesUpdateSettings> _chatMessagesUpdateCollection;
+    private readonly IMongoCollection<ChatMessagesSettings> _chatMessagesUpdateCollection;
     private readonly IMongoCollection<MessagesDto> _smakolikMessagesCollection;
     public MongoService(IOptions<MongoDatabaseSettings> mongoDatabaseSettings)
     {
@@ -19,7 +19,7 @@ public class MongoService
             mongoDatabaseSettings.Value.DatabaseName);
         
         _chatMessagesUpdateCollection =
-            mongoDatabase.GetCollection<ChatMessagesUpdateSettings>(
+            mongoDatabase.GetCollection<ChatMessagesSettings>(
                 mongoDatabaseSettings.Value.CollectionsName.ChatMessagesUpdateSettings);
         
         _smakolikMessagesCollection =
@@ -30,14 +30,14 @@ public class MongoService
     public async Task<List<MessagesDto>> GetMessagesAsync() =>
         await _smakolikMessagesCollection.Find(_ => true).ToListAsync(); 
     
-    public async Task<ChatMessagesUpdateSettings?> GetAsync(long chatId) =>
+    public async Task<ChatMessagesSettings> GetAsync(long chatId) =>
         await _chatMessagesUpdateCollection.Find(x => 
             x.ChatId == chatId).FirstOrDefaultAsync();
 
-    public async Task CreateAsync(ChatMessagesUpdateSettings chatMessagesUpdateSettings) =>
+    public async Task CreateAsync(ChatMessagesSettings chatMessagesUpdateSettings) =>
         await _chatMessagesUpdateCollection.InsertOneAsync(chatMessagesUpdateSettings);
 
-    public async Task UpdateAsync(string id, ChatMessagesUpdateSettings chatMessagesUpdateSettings) =>
+    public async Task UpdateAsync(string id, ChatMessagesSettings chatMessagesUpdateSettings) =>
         await _chatMessagesUpdateCollection.ReplaceOneAsync(x => 
             x.Id == id, chatMessagesUpdateSettings);
 

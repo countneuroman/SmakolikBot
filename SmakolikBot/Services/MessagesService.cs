@@ -7,11 +7,11 @@ public  class GetMessageService
 {
     private readonly IMemoryCache _memoryCache;
     private readonly MongoService _mongoService;
-    private readonly ILogger<GetMessageService> _logger;
+    private readonly ILogger<MessagesService> _logger;
 
-    private List<MessagesDto>? Messages { get; set; }
+    private List<MessagesDto> Messages { get; set; }
 
-    public GetMessageService(MongoService mongoService, IMemoryCache memoryCache, ILogger<GetMessageService> logger)
+    public MessagesService(MongoService mongoService, IMemoryCache memoryCache, ILogger<MessagesService> logger)
     {
         _mongoService = mongoService;
         _memoryCache = memoryCache;

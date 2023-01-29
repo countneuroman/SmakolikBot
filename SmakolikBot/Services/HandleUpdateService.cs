@@ -11,12 +11,12 @@ public class HandleUpdateService
 {
     private readonly ITelegramBotClient _botClient;
     private readonly ILogger<HandleUpdateService> _logger;
-    private readonly GetMessageService _smakolikMessages;
-    private readonly GetChatSettingsService _chatSettings;
+    private readonly MessagesService _smakolikMessages;
+    private readonly ChatSettingsService _chatSettings;
 
 
     public HandleUpdateService(ITelegramBotClient botClient, ILogger<HandleUpdateService> logger,
-        GetMessageService smakolikMessages, GetChatSettingsService chatSettings)
+        MessagesService smakolikMessages, ChatSettingsService chatSettings)
     {
         _botClient = botClient;
         _logger = logger;
