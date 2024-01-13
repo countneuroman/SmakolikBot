@@ -1,9 +1,0 @@
-﻿services:
-  smakolikbot:
-    image: smakolikbot
-    build:
-      context: .
-      dockerfile: SmakolikBot/Dockerfile
-    ports:
-      - 8080:80
-      - 8081:443

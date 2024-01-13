@@ -1,0 +1,26 @@
+﻿services:
+  smakolikbot:
+    image: smakolikbot
+    build:
+      context: .
+      dockerfile: SmakolikBot/Dockerfile
+    environment: 
+      - ASPNETCORE_URLS=https://+;http://+
+      - ASPNETCORE_HTTPS_PORT=8081
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=SertPassword
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    volumes:
+      - C:\Users\olori\.aspnet\https:/https/
+    ports:
+      - 8080:80
+      - 8081:443
+    
+  mongodb:
+    image: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: user
+      MONGO_INITDB_ROOT_PASSWORD: userPassword
+      MONGO_INITDB_DATABASE: SmakolikBot
+
