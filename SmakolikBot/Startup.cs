@@ -8,7 +8,7 @@ namespace SmakolikBot;
 public class Startup
 {
     public IConfiguration Configuration { get;}
-    private BotConfiguration? BotConfig { get; }
+    private BotConfiguration BotConfig { get; }
 
     public Startup(IConfiguration configuration)
     {
@@ -56,9 +56,8 @@ public class Startup
 
         app.UseEndpoints(endpoints =>
         {
-            var token = BotConfig.BotToken;
             endpoints.MapControllerRoute(name: "tgwebhook",
-                pattern: $"bot/{token}",
+                pattern: $"bot",
                 new {controller = "Webhook", action = "Post"});
             endpoints.MapControllers();
         });
