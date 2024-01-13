@@ -4,8 +4,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmakolikBot", "SmakolikBot\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmakolikBot.Tests", "SmakolikBot.Tests\SmakolikBot.Tests.csproj", "{A4E30E8C-E64B-4D41-81CB-A2084DD4A36A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFiles", "SolutionFiles", "{18CB9B78-B85C-4A55-BD72-234168323C09}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A031082F-EACB-4C60-B0E4-A533D2886EA8}"
 	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
 		README.md = README.md
 	EndProjectSection
 EndProject
