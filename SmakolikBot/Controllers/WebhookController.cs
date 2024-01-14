@@ -4,7 +4,7 @@ using Telegram.Bot.Types;
 
 namespace SmakolikBot.Controllers;
 
-public class WebhookController : ControllerBase
+public class BotController : ControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> Post([FromServices] HandleUpdateService handleUpdateService,

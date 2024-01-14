@@ -1,16 +1,42 @@
-namespace SmakolikBot;
+using MongoDB.Driver;
+using SmakolikBot;
+using SmakolikBot.Controllers;
+using SmakolikBot.Extensions;
+using SmakolikBot.Services;
+using Telegram.Bot;
 
-public static class Program
-{
-    public static void Main(string[] args)
+var builder = WebApplication.CreateBuilder(args);
+
+var botConfigurationSection = builder.Configuration.GetSection("BotConfiguration");
+builder.Services.Configure<BotConfiguration>(botConfigurationSection);
+var botConfiguration = botConfigurationSection.Get<BotConfiguration>();
+
+var mongoConfigurationSection = builder.Configuration.GetSection("MongoDatabase");
+builder.Services.Configure<MongoDatabaseSettings>(mongoConfigurationSection);
+
+builder.Services.AddSingleton<MongoService>();
+builder.Services.AddScoped<ChatSettingsService>();
+builder.Services.AddScoped<MessagesService>();
+
+builder.Services.AddHostedService<ConfigureWebhook>();
+
+builder.Services.AddScoped<HandleUpdateService>();
+
+builder.Services.AddHttpClient("telegram_bot_client")
+    .AddTypedClient<ITelegramBotClient>((httpClient, sp) =>
     {
-        CreateHostBuilder(args).Build().Run();
-    }
+        // var botConfig = sp.GetConfiguration<BotConfiguration>();
+        TelegramBotClientOptions options = new(botConfiguration.BotToken);
+        return new TelegramBotClient(options, httpClient);
+    });
 
-    private static IHostBuilder CreateHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<Startup>();
-            });
-}
+builder.Services.AddControllers()
+    .AddNewtonsoftJson();
+
+builder.Services.AddMemoryCache();
+
+var app = builder.Build();
+
+app.MapBotWebhookRoute<BotController>(route: botConfiguration.Route);
+app.MapControllers();
+app.Run();
